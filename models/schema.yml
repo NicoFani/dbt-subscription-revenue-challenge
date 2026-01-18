@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: stg_subscriptions
+    description: "Staging model that cleans raw subscription data, fixing inconsistent dates (end < start) and casting data types."
+    columns:
+      - name: subscription_id
+        description: "Unique identifier for the subscription."
+        tests:
+          - unique
+          - not_null
+      - name: account_id
+        description: "Identifier of the customer account."
+        tests:
+          - not_null
+
+  - name: fct_mrr_movements
+    description: "Final fact table representing monthly Annual Recurring Revenue (ARR) changes and categorization per account."
+    columns:
+      - name: account_id
+        description: "Identifier of the customer account."
+        tests:
+          - not_null
+      - name: date_month
+        description: "The reporting month (first day of the month)."
+        tests:
+          - not_null
+      - name: change_category
+        description: "Classification of the revenue change compared to the previous month."
+        tests:
+          - accepted_values:
+              values:
+                [
+                  "New",
+                  "Churn",
+                  "Upgrade",
+                  "Downgrade",
+                  "No-change",
+                  "Reactivation",
+                ]
+      - name: current_mrr
+        description: "Total ARR for the account in the current month."
+      - name: mrr_change
+        description: "Difference in ARR compared to the previous month."
